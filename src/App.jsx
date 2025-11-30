@@ -9,8 +9,8 @@ const App = () => {
   // AVISO IMPORTANTE:
   // QUANDO SUBIR PARA O GITHUB: Remova as duas barras "//" do início da linha abaixo para o site funcionar:
   
-  // const envWebhookUrl = import.meta.env.VITE_WEBHOOK_URL;
-  const envWebhookUrl = ""; // <- APAGUE ESTA LINHA e descomente a de cima quando for para o GitHub.
+  const envWebhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+ 
   
   // Configuração da Identidade Visual (TEMA DARK)
   const brandColors = {
