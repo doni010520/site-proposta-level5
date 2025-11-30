@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle, AlertCircle, Settings, User, Zap, DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, CheckCircle, AlertCircle, User, Zap, DollarSign } from 'lucide-react';
 
 const App = () => {
   // CONFIGURAÇÃO DA IMAGEM
   const logoUrl = "/logo-level5.jpg"; 
 
   // --- CONFIGURAÇÃO DO WEBHOOK (EASYPANEL) ---
-  // AVISO IMPORTANTE: O comando 'import.meta' causa erro na visualização deste chat.
-  // QUANDO SUBIR PARA O GITHUB/VPS: Remova as duas barras "//" do início da linha abaixo para ativar a automação:
+  // AVISO IMPORTANTE:
+  // QUANDO SUBIR PARA O GITHUB: Remova as duas barras "//" do início da linha abaixo para o site funcionar:
   
   // const envWebhookUrl = import.meta.env.VITE_WEBHOOK_URL;
-  const envWebhookUrl = ""; // Esta linha é apenas um fallback para não dar erro aqui na visualização.
+  const envWebhookUrl = ""; // <- APAGUE ESTA LINHA e descomente a de cima quando for para o GitHub.
   
   // Configuração da Identidade Visual (TEMA DARK)
   const brandColors = {
@@ -24,16 +24,6 @@ const App = () => {
     headerText: "text-white",
     accentYellow: "text-yellow-400"
   };
-
-  const [webhookUrl, setWebhookUrl] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
-
-  // Se existir variável de ambiente, configura ela automaticamente
-  useEffect(() => {
-    if (envWebhookUrl) {
-      setWebhookUrl(envWebhookUrl);
-    }
-  }, [envWebhookUrl]);
 
   const [formData, setFormData] = useState({
     nome: '',
@@ -59,12 +49,12 @@ const App = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Usa a variável de ambiente OU o que foi digitado manualmente
-    const targetUrl = envWebhookUrl || webhookUrl || "https://n8n.seu-servidor.com/webhook/test"; 
+    // Usa exclusivamente a variável de ambiente configurada no Easypanel
+    const targetUrl = envWebhookUrl; 
     
-    if (!targetUrl.startsWith('http')) {
+    if (!targetUrl || !targetUrl.startsWith('http')) {
       setStatus('error');
-      setMessage('URL do Webhook inválida. Verifique as configurações no Easypanel.');
+      setMessage('Erro de configuração: Webhook URL não encontrada no ambiente.');
       return;
     }
 
@@ -91,7 +81,15 @@ const App = () => {
         setStatus('success');
         setMessage('Proposta enviada com sucesso!');
         // Opcional: Limpar formulário
-        // setFormData({ nome: '', ... });
+        setFormData({
+            nome: '',
+            modulos_quantidade: '',
+            especificacoes_modulo: '',
+            inversores_quantidade: '',
+            especificacoes_inversores: '',
+            investimento_kit_fotovoltaico: '',
+            investimento_mao_de_obra: ''
+        });
       } else {
         throw new Error('Erro de servidor');
       }
@@ -125,36 +123,10 @@ const App = () => {
               </span>
             </div>
           </div>
-          
-          {/* Só mostra o ícone de engrenagem se NÃO tiver variável de ambiente configurada */}
-          {!envWebhookUrl && (
-            <button 
-              onClick={() => setShowSettings(!showSettings)}
-              className="text-slate-500 hover:text-yellow-400 transition-colors p-2"
-              title="Configurações Manuais"
-            >
-              <Settings className="w-6 h-6" />
-            </button>
-          )}
         </div>
       </header>
 
       <main className="w-full max-w-2xl mx-auto px-4 mt-8 flex-grow">
-        
-        {/* Menu de Configuração Manual (Fallback) */}
-        {showSettings && !envWebhookUrl && (
-          <div className="w-full bg-slate-800 rounded-lg p-4 mb-6 border border-yellow-500/20 shadow-lg animate-in fade-in slide-in-from-top-2">
-            <label className="text-xs text-yellow-500 font-bold uppercase mb-1 block">Webhook URL (Manual)</label>
-            <input 
-              type="text" 
-              value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
-              placeholder="https://..."
-              className="w-full bg-slate-900 text-slate-200 text-sm p-3 rounded border border-slate-700 focus:border-yellow-500 outline-none"
-            />
-          </div>
-        )}
-
         <div className={`${brandColors.card} rounded-2xl shadow-2xl border border-slate-700 overflow-hidden`}>
           <div className="bg-slate-800/50 p-8 border-b border-slate-700 text-center">
             <h2 className={`text-2xl font-bold ${brandColors.textMain}`}>Gerador de Propostas</h2>
